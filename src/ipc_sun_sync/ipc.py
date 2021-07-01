@@ -3,7 +3,7 @@ import re
 
 import requests
 from requests.auth import HTTPDigestAuth
-from requests.exceptions import ConnectTimeout
+from requests.exceptions import RequestException
 
 from .constants import SWITCH_MODE_TIME, NIGHT_OPTION_KEYS
 
@@ -11,7 +11,7 @@ from .constants import SWITCH_MODE_TIME, NIGHT_OPTION_KEYS
 def ipc_get(ip, auth, url):
     try:
         res = requests.get(url, auth=auth, timeout=10)
-    except ConnectTimeout:
+    except RequestException:
         logging.error("Unable to connect to %s", ip)
         return False
 
