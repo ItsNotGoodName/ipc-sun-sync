@@ -1,1 +1,1 @@
-__description__ = "Syncs sunrise time and sunset time on Dahua IP Cameras"
+__description__ = "Sync sunrise and sunset time on Dahua IP Cameras."

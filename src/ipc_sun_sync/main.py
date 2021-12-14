@@ -34,7 +34,7 @@ def main():
     )
     if not valid_sunrise_and_sunset(sunrise, sunset):
         logging.error(
-            "Sunrise and sunset interval is not within a single day. Check if your timezone and coordinates are correct."
+            "Daytime hours are not within a single day (e.g. sunrise 1:00 PM and sunset 12:01 AM the next day), check if your timezone and coordinates are correct"
         )
         return 1
 
