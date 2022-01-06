@@ -43,10 +43,16 @@ The sunrise and sunset time will be calculated using the `latitude` and
 `longitude` variables, then it will be converted to your timezone using the
 `timezone` variable.
 
-### Show Version
+### Show Timezones
 
 ```
 ipc-sun-sync -T
+```
+
+### Show Version
+
+```
+ipc-sun-sync -V
 ```
 
 ## Troubleshooting
