@@ -8,7 +8,7 @@ from requests.exceptions import RequestException
 from .constants import SWITCH_MODE_TIME, NIGHT_OPTION_KEYS
 
 
-def ipc_get(ip, auth, url):
+def get_ipc(ip, auth, url):
     try:
         res = requests.get(url, auth=auth, timeout=10)
     except RequestException:
@@ -31,7 +31,7 @@ def get_night_options(ip, auth, channel=0):
         "http://%s/cgi-bin/configManager.cgi?action=getConfig&name=VideoInOptions[%s].NightOptions"
         % (ip, channel)
     )
-    res = ipc_get(ip, auth, url)
+    res = get_ipc(ip, auth, url)
 
     if not res:
         return False
@@ -61,7 +61,7 @@ def set_night_option(ip, auth, value, channel=0):
         % (ip, channel, value)
     )
 
-    return not not ipc_get(ip, auth, url)
+    return not not get_ipc(ip, auth, url)
 
 
 def sync(

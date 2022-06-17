@@ -1,6 +1,5 @@
 import logging
 
-from yaml import YAMLError
 import pytz
 
 from . import ipc, __version__

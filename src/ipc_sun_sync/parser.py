@@ -92,12 +92,8 @@ def parse_config(yml):
 
         ipc["ip"] = str(c["ip"])
         ipc["name"] = str(c["name"]) if "name" in c else c["ip"]
-        ipc["username"] = (
-            str(c["username"]) if "username" in c else yml["username"]
-        )
-        ipc["password"] = (
-            str(c["password"]) if "password" in c else yml["password"]
-        )
+        ipc["username"] = str(c["username"]) if "username" in c else yml["username"]
+        ipc["password"] = str(c["password"]) if "password" in c else yml["password"]
         ipc["channel"] = int(c["channel"]) if "channel" in c else 0
 
         config["ipc"].append(ipc)
