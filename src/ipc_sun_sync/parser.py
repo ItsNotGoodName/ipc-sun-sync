@@ -26,13 +26,6 @@ def parse_args():
         help="configuration file path",
     )
     parser.add_argument(
-        "-d",
-        "--daemon",
-        dest="daemon",
-        action="store_true",
-        help="run as a daemon",
-    )
-    parser.add_argument(
         "-v",
         "--verbose",
         dest="verbose",

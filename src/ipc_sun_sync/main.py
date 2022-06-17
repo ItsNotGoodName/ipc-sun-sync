@@ -37,22 +37,18 @@ def main():
         )
         return 1
 
-    if args.daemon:
-        logging.error("Daemon not implemented")
-        return 1
-    else:
-        for c in config["ipc"]:
-            if ipc.sync(
-                ip=c["ip"],
-                username=c["username"],
-                password=c["password"],
-                sunrise=sunrise,
-                sunset=sunset,
-                channel=c["channel"],
-            ):
-                print(
-                    "Sunrise and sunset synced for %s on channel %s"
-                    % (c["name"], c["channel"])
-                )
-            else:
-                print("Unable to sync sunrise and sunset for %s" % c["name"])
+    for c in config["ipc"]:
+        if ipc.sync(
+            ip=c["ip"],
+            username=c["username"],
+            password=c["password"],
+            sunrise=sunrise,
+            sunset=sunset,
+            channel=c["channel"],
+        ):
+            print(
+                "Sunrise and sunset synced for %s on channel %s"
+                % (c["name"], c["channel"])
+            )
+        else:
+            print("Unable to sync sunrise and sunset for %s" % c["name"])

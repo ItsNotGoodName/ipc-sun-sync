@@ -57,6 +57,3 @@ If the program says it is successful but sunrise and sunset times do not change,
 ## To Do
 
 - Add sunrise and sunset offsets
-- Add daemon mode
-- Add Windows service
-- Add gui
