@@ -1,5 +1,8 @@
 # ipc-sun-sync
 
+[![GitHub](https://img.shields.io/github/license/itsnotgoodname/ipc-sun-sync)](./LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/ipc-sun-sync)](https://pypi.org/project/ipc-sun-sync/)
+
 Sync sunrise and sunset on Dahua IP Cameras.
 
 ## Usage
