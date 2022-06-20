@@ -3,8 +3,8 @@ import logging
 import pytz
 
 from . import ipc, __version__
-from .parser import parse_args, parse_yml, parse_config
-from .utils import get_sunrise_and_sunset, valid_sunrise_and_sunset
+from .parser import parse_args, parse_yml_or_exit, parse_config_or_exit
+from .utils import get_sunrise_and_sunset, valid_dahua_sunrise_and_sunset
 
 
 def main():
@@ -17,12 +17,8 @@ def main():
             print(t)
         return
 
-    yml = parse_yml(args.path)
-    if not yml:
-        return 1
-
-    config = parse_config(yml)
-    sunrise, sunset = get_sunrise_and_sunset(config)
+    config = parse_config_or_exit(parse_yml_or_exit(args.path))
+    sunrise, sunset = get_sunrise_and_sunset(config["location"])
     print(
         "Sunrise is at %s and sunset is at %s for %s"
         % (
@@ -31,7 +27,7 @@ def main():
             sunrise.strftime("%x"),
         )
     )
-    if not valid_sunrise_and_sunset(sunrise, sunset):
+    if not valid_dahua_sunrise_and_sunset(sunrise, sunset):
         logging.error(
             "Daytime hours are not within a single day (e.g. sunrise 1:00 PM and sunset 12:01 AM the next day), check if your timezone and coordinates are correct"
         )

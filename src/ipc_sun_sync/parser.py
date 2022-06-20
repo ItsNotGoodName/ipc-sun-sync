@@ -46,11 +46,10 @@ def parse_args():
         action="store_true",
         help="show all timezones",
     )
-
     return parser.parse_args()
 
 
-def parse_yml(path):
+def parse_yml_or_exit(path):
     try:
         with path.open(mode="r") as stream:
             return yaml.safe_load(stream)
@@ -60,23 +59,23 @@ def parse_yml(path):
         logging.error("File '%s' is not readable", path)
     except YAMLError as error:
         logging.error(error)
-    return False
+    exit(1)
 
 
-def parse_config(yml):
+def parse_config_or_exit(yml):
+    if yml["timezone"] not in pytz.all_timezones:
+        logging.error("Timezone '%s' is invalid", yml["timezone"])
+        exit(1)
+
     config = {}
-    config["longitude"] = float(yml["longitude"])
-    config["latitude"] = float(yml["latitude"])
-    config["timezone"] = pytz.timezone(yml["timezone"])
-
     config["username"] = str(yml["username"])
     config["password"] = str(yml["password"])
     config["location"] = LocationInfo(
         "name",
         "region",
-        config["timezone"],
-        config["latitude"],
-        config["longitude"],
+        yml["timezone"],
+        float(yml["latitude"]),
+        float(yml["longitude"]),
     )
 
     config["ipc"] = []
@@ -90,4 +89,5 @@ def parse_config(yml):
         ipc["channel"] = int(c["channel"]) if "channel" in c else 0
 
         config["ipc"].append(ipc)
+
     return config
