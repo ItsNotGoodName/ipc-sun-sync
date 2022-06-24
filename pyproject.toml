@@ -5,6 +5,7 @@ description = "Sync sunrise and sunset on Dahua IP Cameras."
 authors = ["ItsNotGoodName <gurnaindeol@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+include = ["CHANGELOG.md"]
 classifiers = [
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: MIT License",
