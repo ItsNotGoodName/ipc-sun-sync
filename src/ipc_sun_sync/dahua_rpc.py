@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 Gist from https://gist.github.com/gxfxyz/48072a72be3a169bc43549e676713201
 
@@ -126,50 +123,6 @@ class DahuaRpc:
 
         return r
 
-    def reboot(self):
-        """Reboot the device."""
-
-        # Get object id
-        method = "magicBox.factory.instance"
-        params = ""
-        r = self.request(method=method, params=params)
-        object_id = r["result"]
-
-        # Reboot
-        method = "magicBox.reboot"
-        r = self.request(method=method, params=params, object_id=object_id)
-
-        if r["result"] is False:
-            raise RequestError(str(r))
-
-    def current_time(self):
-        """Get the current time on the device."""
-
-        method = "global.getCurrentTime"
-        r = self.request(method=method)
-
-        if r["result"] is False:
-            raise RequestError(str(r))
-
-        return r["params"]["time"]
-
-    def ntp_sync(self, address, port, time_zone):
-        """Synchronize time with NTP."""
-
-        # Get object id
-        method = "netApp.factory.instance"
-        params = ""
-        r = self.request(method=method, params=params)
-        object_id = r["result"]
-
-        # NTP sync
-        method = "netApp.adjustTimeWithNTP"
-        params = {"Address": address, "Port": port, "TimeZone": time_zone}
-        r = self.request(method=method, params=params, object_id=object_id)
-
-        if r["result"] is False:
-            raise RequestError(str(r))
-
     def sync_sunrise_and_sunset(
         self,
         sunrise: datetime.datetime,
@@ -184,51 +137,3 @@ class DahuaRpc:
             0
         ] = f"1 {sunrise.strftime('%H:%M:%S')}-{sunset.strftime('%H:%M:%S')}"
         self.set_config(params={"name": "VideoInMode", "table": table, "options": []})
-
-    def get_split(self):
-        """Get display split mode."""
-
-        # Get object id
-        method = "split.factory.instance"
-        params = {"channel": 0}
-        r = self.request(method=method, params=params)
-        object_id = r["result"]
-
-        # Get split mode
-        method = "split.getMode"
-        params = ""
-        r = self.request(method=method, params=params, object_id=object_id)
-
-        if r["result"] is False:
-            raise RequestError(str(r))
-
-        mode = int(r["params"]["mode"][5:])
-        view = int(r["params"]["group"]) + 1
-
-        return mode, view
-
-    def set_split(self, mode, view):
-        """Set display split mode."""
-
-        if isinstance(mode, int):
-            mode = "Split{}".format(mode)
-        group = view - 1
-
-        # Get object id
-        method = "split.factory.instance"
-        params = {"channel": 0}
-        r = self.request(method=method, params=params)
-        object_id = r["result"]
-
-        # Set split mode
-        method = "split.setMode"
-        params = {
-            "displayType": "General",
-            "workMode": "Local",
-            "mode": mode,
-            "group": group,
-        }
-        r = self.request(method=method, params=params, object_id=object_id)
-
-        if r["result"] is False:
-            raise RequestError(str(r))
