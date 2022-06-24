@@ -14,12 +14,12 @@ from .utils import get_sunrise_and_sunset, valid_dahua_sunrise_and_sunset
 def main():
     args = parse_args()
 
-    # Print version
+    #################### Print version
     if args.version:
         print(__version__)
         return
 
-    # Print timezones
+    ####################  Print timezones
     if args.timezones:
         for t in pytz.all_timezones:
             print(t)
@@ -28,8 +28,8 @@ def main():
     config = parse_config_or_exit(parse_yml_or_exit(args.path))
     ret_code = 0
 
-    # Check all ipc
-    if args.check:
+    #################### Verify ipc settings
+    if args.verify:
         for c in config["ipc"]:
             try:
                 ipc = get_ipc(c)
@@ -44,8 +44,27 @@ def main():
             )
         return ret_code
 
-    # Sync all ipc
     sunrise, sunset = get_sunrise_and_sunset(config["location"])
+
+    #################### Check configuration
+    if args.check:
+        print(f"timezone: {config['location'].timezone}")
+        print(f"lattitude: {config['location'].latitude}")
+        print(f"longitude: {config['location'].longitude}")
+        print(f"sunrise: {sunrise.strftime('%X')}")
+        print(f"sunset: {sunset.strftime('%X')}")
+        print("ipc:")
+        for c in config["ipc"]:
+            print(f"  - name: {c['name']}")
+            print(f"    ip: {c['ip']}")
+            print(f"    channel: {c['channel']}")
+            print(f"    username: {c['username']}")
+            print(f"    method: {c['method']}")
+            print(f"    sunrise: {(sunrise+c['sunrise_offset']).strftime('%X')}")
+            print(f"    sunset: {(sunset+c['sunset_offset']).strftime('%X')}")
+        return
+
+    #################### Sync all ipc
     print(
         "sunrise is %s and sunset is %s for %s"
         % (

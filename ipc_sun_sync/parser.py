@@ -24,7 +24,10 @@ def parse_args():
         help="enable verbose logging",
     )
     parser.add_argument(
-        "--check", action="store_true", dest="check", help="check all ipc"
+        "--check", action="store_true", dest="check", help="check configuration"
+    )
+    parser.add_argument(
+        "--verify", action="store_true", dest="verify", help="verify ipc settings"
     )
     parser.add_argument(
         "-c",

@@ -7,19 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## Added
+### Added
 
 - Option to interact via rpc instead of cgi.
-- Add --check option to view ipc settings.
-- Add sunrise and sunset offsets.
+- `--verify` flag to verify ipc settings.
+- Sunrise and sunset offsets.
+- `--check` flag to check configuration.
 
 ## [0.1.1] - 2022-06-16
 
-## Added
+### Added
 
 - Badges to README.
 
-## Fixed
+### Fixed
 
 - Description for PyPi.
 
