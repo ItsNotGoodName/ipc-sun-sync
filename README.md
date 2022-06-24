@@ -17,10 +17,12 @@ timezone: America/Los_Angeles
 
 username: admin
 password: password
+method: cgi
 
 ipc:
   - ip: 192.168.1.108
   - ip: 192.168.1.109
+    method: rpc
   - ip: 192.168.1.110
     name: FriendlyNameForLogging
     username: OverideDefaultUser
@@ -35,6 +37,8 @@ ipc-sun-sync -c config.yml
 ```
 
 `192.168.1.108` and `192.168.1.109` will use the credentials `admin` and `password`.
+
+`192.168.1.109` will interact through rpc instead of cgi.
 
 `192.168.1.110` will have it's `name`, `username`, `password`, and `channel` overridden.
 `name` is used for logging. `channel` is what video channel you want to apply the sun time, default is `channel` 0.
@@ -55,7 +59,7 @@ ipc-sun-sync -V
 
 ## Troubleshooting
 
-If the program says it is successful but sunrise and sunset times do not change, try disabling `Smart Codec` if it is enabled.
+- If the program says it is successful but the sunrise and sunset times do not change, ~~try disabling `Smart Codec` if it is enabled.~~ use rpc.
 
 ## To Do
 

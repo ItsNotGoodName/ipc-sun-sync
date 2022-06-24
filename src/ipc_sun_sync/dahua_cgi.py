@@ -65,7 +65,7 @@ class DahuaCgi:
             f"action=setConfig&VideoInOptions[{channel}].NightOptions.{name}={value}"
         )
 
-    def set_sunrise_and_sunset(
+    def sync_sunrise_and_sunset(
         self,
         sunrise: datetime.datetime,
         sunset: datetime.datetime,

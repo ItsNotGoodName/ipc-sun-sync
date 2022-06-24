@@ -5,6 +5,7 @@ import pytz
 
 from . import __version__
 from .dahua_cgi import DahuaCgi
+from .dahua_rpc import DahuaRpc
 from .parser import parse_args, parse_yml_or_exit, parse_config_or_exit
 from .utils import get_sunrise_and_sunset, valid_dahua_sunrise_and_sunset
 
@@ -40,23 +41,31 @@ def main():
     for c in config["ipc"]:
         print("Syncing %s on channel %s..." % (c["name"], c["channel"]))
 
-        if c["method"] == "cgi":
-            try:
-                DahuaCgi(c["ip"], c["username"], c["password"]).set_sunrise_and_sunset(
+        try:
+            if c["method"] == "cgi":
+                DahuaCgi(
+                    ip=c["ip"], username=c["username"], password=c["password"]
+                ).sync_sunrise_and_sunset(
                     sunrise=sunrise,
                     sunset=sunset,
                     channel=c["channel"],
                 )
-            except Exception as e:
-                print(traceback.format_exc())
-                logging.error("Unable to sync %s", c["name"], e)
-                code = 1
+            elif c["method"] == "rpc":
+                rpc = DahuaRpc(
+                    ip=c["ip"], username=c["username"], password=c["password"]
+                )
+                rpc.login()
+                rpc.sync_sunrise_and_sunset(
+                    sunrise=sunrise,
+                    sunset=sunset,
+                    channel=c["channel"],
+                )
+            else:
+                logging.error("Invalid method %s", c["method"])
                 continue
-        elif c["method"] == "rpc":
-            logging.error("rpc is not implemented")
-            continue
-        else:
-            logging.error("Invalid method %s", c["method"])
+        except Exception:
+            print(traceback.format_exc())
+            code = 1
             continue
 
         print("Synced %s on channel %s" % (c["name"], c["channel"]))
