@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Option to interact via rpc instead of cgi.
 - Add --check option to view ipc settings.
+- Add sunrise and sunset offsets.
 
 ## [0.1.1] - 2022-06-16
 

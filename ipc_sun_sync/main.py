@@ -65,8 +65,8 @@ def main():
 
         try:
             get_ipc(c).set_sunrise_and_sunset(
-                sunrise=sunrise,
-                sunset=sunset,
+                sunrise=sunrise + c["sunrise_offset"],
+                sunset=sunset + c["sunset_offset"],
                 channel=c["channel"],
             )
         except Exception as e:

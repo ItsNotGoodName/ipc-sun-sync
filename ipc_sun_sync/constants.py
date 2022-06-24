@@ -1,4 +1,4 @@
-from datetime import time, datetime
+from datetime import time, datetime, timedelta
 from enum import Enum
 from typing import List, Protocol, Tuple, Union, TypedDict
 
@@ -17,13 +17,12 @@ class ConfigIPC(TypedDict):
     password: str
     channel: int
     method: ConfigMethod
+    sunrise_offset: timedelta
+    sunset_offset: timedelta
 
 
 class Config(TypedDict):
-    username: str
-    password: str
     location: astral.LocationInfo
-    method: ConfigMethod
     ipc: List[ConfigIPC]
 
 

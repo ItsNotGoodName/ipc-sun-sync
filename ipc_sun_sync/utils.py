@@ -1,10 +1,11 @@
 from datetime import datetime
+from typing import Tuple
 
 import astral
 import astral.sun
 
 
-def get_sunrise_and_sunset(location: astral.LocationInfo):
+def get_sunrise_and_sunset(location: astral.LocationInfo) -> Tuple[datetime, datetime]:
     times = astral.sun.sun(
         location.observer,
         tzinfo=location.tzinfo,
