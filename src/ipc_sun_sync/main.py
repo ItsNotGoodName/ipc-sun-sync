@@ -1,8 +1,10 @@
 import logging
+import traceback
 
 import pytz
 
-from . import ipc, __version__
+from . import __version__
+from .dahua_cgi import DahuaCgi
 from .parser import parse_args, parse_yml_or_exit, parse_config_or_exit
 from .utils import get_sunrise_and_sunset, valid_dahua_sunrise_and_sunset
 
@@ -33,18 +35,30 @@ def main():
         )
         return 1
 
+    code = 0
+
     for c in config["ipc"]:
-        if ipc.sync(
-            ip=c["ip"],
-            username=c["username"],
-            password=c["password"],
-            sunrise=sunrise,
-            sunset=sunset,
-            channel=c["channel"],
-        ):
-            print(
-                "Sunrise and sunset synced for %s on channel %s"
-                % (c["name"], c["channel"])
-            )
+        print("Syncing %s on channel %s..." % (c["name"], c["channel"]))
+
+        if c["method"] == "cgi":
+            try:
+                DahuaCgi(c["ip"], c["username"], c["password"]).set_sunrise_and_sunset(
+                    sunrise=sunrise,
+                    sunset=sunset,
+                    channel=c["channel"],
+                )
+            except Exception as e:
+                print(traceback.format_exc())
+                logging.error("Unable to sync %s", c["name"], e)
+                code = 1
+                continue
+        elif c["method"] == "rpc":
+            logging.error("rpc is not implemented")
+            continue
         else:
-            print("Unable to sync sunrise and sunset for %s" % c["name"])
+            logging.error("Invalid method %s", c["method"])
+            continue
+
+        print("Synced %s on channel %s" % (c["name"], c["channel"]))
+
+    return code

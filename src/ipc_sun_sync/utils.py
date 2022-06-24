@@ -1,11 +1,11 @@
 from datetime import datetime
 
-from astral.sun import sun
-from astral import LocationInfo
+import astral
+import astral.sun
 
 
-def get_sunrise_and_sunset(location: LocationInfo):
-    times = sun(
+def get_sunrise_and_sunset(location: astral.LocationInfo):
+    times = astral.sun.sun(
         location.observer,
         tzinfo=location.tzinfo,
     )

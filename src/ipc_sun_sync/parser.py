@@ -3,10 +3,9 @@ import pathlib
 import sys
 import logging
 
-import yaml
-from yaml import YAMLError
+import astral
 import pytz
-from astral import LocationInfo
+import yaml
 
 from . import __description__
 
@@ -57,7 +56,7 @@ def parse_yml_or_exit(path):
         logging.error("File '%s' does not exist", path)
     except PermissionError:
         logging.error("File '%s' is not readable", path)
-    except YAMLError as error:
+    except yaml.YAMLError as error:
         logging.error(error)
     exit(1)
 
@@ -68,15 +67,16 @@ def parse_config_or_exit(yml):
         exit(1)
 
     config = {}
-    config["username"] = str(yml["username"])
+    config["username"] = str(yml["username"]) if "username" in yml else "admin"
     config["password"] = str(yml["password"])
-    config["location"] = LocationInfo(
+    config["location"] = astral.LocationInfo(
         "name",
         "region",
-        yml["timezone"],
+        str(yml["timezone"]),
         float(yml["latitude"]),
         float(yml["longitude"]),
     )
+    config["method"] = str(yml["method"]) if "method" in yml else "cgi"
 
     config["ipc"] = []
     for c in yml["ipc"]:
@@ -84,9 +84,10 @@ def parse_config_or_exit(yml):
 
         ipc["ip"] = str(c["ip"])
         ipc["name"] = str(c["name"]) if "name" in c else c["ip"]
-        ipc["username"] = str(c["username"]) if "username" in c else yml["username"]
-        ipc["password"] = str(c["password"]) if "password" in c else yml["password"]
+        ipc["username"] = str(c["username"]) if "username" in c else config["username"]
+        ipc["password"] = str(c["password"]) if "password" in c else config["password"]
         ipc["channel"] = int(c["channel"]) if "channel" in c else 0
+        ipc["method"] = str(c["method"]) if "method" in c else config["method"]
 
         config["ipc"].append(ipc)
 
