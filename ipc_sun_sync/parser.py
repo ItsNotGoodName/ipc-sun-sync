@@ -2,16 +2,21 @@ import argparse
 import pathlib
 import sys
 import logging
+from typing import Dict
 
 import astral
 import pytz
 import yaml
 
+from .constants import Config, ConfigMethod, ConfigIPC
 from . import __description__
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description=__description__)
+    parser.add_argument(
+        "--check", action="store_true", dest="check", help="check all ipc"
+    )
     parser.add_argument(
         "-c",
         "--config",
@@ -48,7 +53,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def parse_yml_or_exit(path):
+def parse_yml_or_exit(path: pathlib.Path):
     try:
         with path.open(mode="r") as stream:
             return yaml.safe_load(stream)
@@ -61,34 +66,50 @@ def parse_yml_or_exit(path):
     exit(1)
 
 
-def parse_config_or_exit(yml):
+def parse_method_or_exit(yml: Dict) -> ConfigMethod:
+    if "method" not in yml:
+        return ConfigMethod.CGI
+    if yml["method"] == "cgi":
+        return ConfigMethod.CGI
+    if yml["method"] == "rpc":
+        return ConfigMethod.RPC
+
+    logging.error("method invalid")
+    exit(1)
+
+
+def parse_config_or_exit(yml: Dict) -> Config:
+    timezone = str(yml["timezone"])
     if yml["timezone"] not in pytz.all_timezones:
         logging.error("Timezone '%s' is invalid", yml["timezone"])
         exit(1)
 
-    config = {}
-    config["username"] = str(yml["username"]) if "username" in yml else "admin"
-    config["password"] = str(yml["password"])
-    config["location"] = astral.LocationInfo(
-        "name",
-        "region",
-        str(yml["timezone"]),
-        float(yml["latitude"]),
-        float(yml["longitude"]),
-    )
-    config["method"] = str(yml["method"]) if "method" in yml else "cgi"
+    config: Config = {
+        "username": str(yml["username"]) if "username" in yml else "admin",
+        "password": str(yml["password"]),
+        "location": astral.LocationInfo(
+            name="custom",
+            region="custom",
+            timezone=timezone,
+            latitude=float(yml["latitude"]),
+            longitude=float(yml["longitude"]),
+        ),
+        "method": parse_method_or_exit(yml),
+        "ipc": [],
+    }
 
-    config["ipc"] = []
     for c in yml["ipc"]:
-        ipc = {}
+        ipc_config: ConfigIPC = {
+            "ip": str(c["ip"]),
+            "name": str(c["name"]) if "name" in c else str(c["ip"]),
+            "username": str(c["username"]) if "username" in c else config["username"],
+            "password": str(c["password"]) if "password" in c else config["password"],
+            "channel": int(c["channel"]) if "channel" in c else 0,
+            "method": parse_method_or_exit(c["method"])
+            if "method" in c
+            else config["method"],
+        }
 
-        ipc["ip"] = str(c["ip"])
-        ipc["name"] = str(c["name"]) if "name" in c else c["ip"]
-        ipc["username"] = str(c["username"]) if "username" in c else config["username"]
-        ipc["password"] = str(c["password"]) if "password" in c else config["password"]
-        ipc["channel"] = int(c["channel"]) if "channel" in c else 0
-        ipc["method"] = str(c["method"]) if "method" in c else config["method"]
-
-        config["ipc"].append(ipc)
+        config["ipc"].append(ipc_config)
 
     return config

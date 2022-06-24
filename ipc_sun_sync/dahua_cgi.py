@@ -1,32 +1,29 @@
+from datetime import datetime, time
+from enum import Enum
+from typing import Tuple, Union, TypedDict
 import re
-import datetime
 
+from requests.auth import HTTPDigestAuth
 import requests
-import requests.auth
 
+from .constants import SwitchMode
 from .exceptions import LoginError, RequestError
 
-SWITCH_MODE_DAY = 0
-SWITCH_MODE_BRIGHTNESS = 1
-SWITCH_MODE_TIME = 2
-SWITCH_MODE_NIGHT = 3
-SWITCH_MODE_GENERAL = 4
 
-NIGHT_OPTION_KEYS = [
-    "SwitchMode",
-    "SunriseHour",
-    "SunriseMinute",
-    "SunriseSecond",
-    "SunsetHour",
-    "SunsetMinute",
-    "SunsetSecond",
-]
+class NightOption(TypedDict):
+    SwitchMode: SwitchMode
+    SunriseHour: int
+    SunriseMinute: int
+    SunriseSecond: int
+    SunsetHour: int
+    SunsetMinute: int
+    SunsetSecond: int
 
 
 class DahuaCgi:
     def __init__(self, ip: str, username: str, password: str):
         self.ip = ip
-        self.auth = requests.auth.HTTPDigestAuth(username, password)
+        self.auth = HTTPDigestAuth(username, password)
 
     def request(self, params: str) -> requests.Response:
         res = requests.get(
@@ -36,27 +33,33 @@ class DahuaCgi:
         )
 
         if res.status_code == 401:
-            raise LoginError("Invalid credentials")
+            raise LoginError("invalid credentials")
 
         if res.status_code != 200:
-            raise RequestError(f"Unknown status code {res.status_code}")
+            raise RequestError(f"unknown status code {res.status_code}")
 
         return res
 
-    def get_night_options(self, channel=0) -> dict:
+    def get_night_options(self, channel=0) -> NightOption:
         res = self.request(
             f"action=getConfig&name=VideoInOptions[{channel}].NightOptions"
         )
 
-        night_options = {}
+        parsed = {}
         rows = re.findall("NightOptions\\.(.*)\r\n", res.text)
         for row in rows:
             key, value = row.split("=")
-            if key in NIGHT_OPTION_KEYS:
-                night_options[key] = int(value)
+            parsed[key] = value
 
-        for option in NIGHT_OPTION_KEYS:
-            assert option in night_options
+        night_options: NightOption = {
+            "SunriseHour": int(parsed["SunriseHour"]),
+            "SunriseMinute": int(parsed["SunriseMinute"]),
+            "SunriseSecond": int(parsed["SunriseSecond"]),
+            "SunsetHour": int(parsed["SunsetHour"]),
+            "SunsetMinute": int(parsed["SunsetMinute"]),
+            "SunsetSecond": int(parsed["SunsetSecond"]),
+            "SwitchMode": SwitchMode(int(parsed["SwitchMode"])),
+        }
 
         return night_options
 
@@ -65,16 +68,32 @@ class DahuaCgi:
             f"action=setConfig&VideoInOptions[{channel}].NightOptions.{name}={value}"
         )
 
-    def sync_sunrise_and_sunset(
-        self,
-        sunrise: datetime.datetime,
-        sunset: datetime.datetime,
-        switch_mode=SWITCH_MODE_TIME,
-        channel=0,
-    ) -> bool:
+    def get_sunrise_and_sunset(self, channel=0) -> Tuple[time, time, SwitchMode]:
         night_options = self.get_night_options(channel=channel)
+        return (
+            time(
+                hour=night_options["SunriseHour"],
+                minute=night_options["SunriseMinute"],
+                second=night_options["SunriseSecond"],
+            ),
+            time(
+                hour=night_options["SunsetHour"],
+                minute=night_options["SunsetMinute"],
+                second=night_options["SunsetSecond"],
+            ),
+            night_options["SwitchMode"],
+        )
 
-        state = {
+    def set_sunrise_and_sunset(
+        self,
+        sunrise: Union[datetime, time],
+        sunset: Union[datetime, time],
+        switch_mode=SwitchMode.TIME,
+        channel=0,
+    ):
+        old_night_options = self.get_night_options(channel=channel)
+
+        new_night_options: NightOption = {
             "SwitchMode": switch_mode,
             "SunriseHour": sunrise.hour,
             "SunriseMinute": sunrise.minute,
@@ -84,6 +103,6 @@ class DahuaCgi:
             "SunsetSecond": sunset.second,
         }
 
-        for k, v in state.items():
-            if not night_options[k] == v:
-                self.set_night_option(k, v)
+        for k, v in new_night_options.items():
+            if not old_night_options[k] == v:
+                self.set_night_option(k, v.value if isinstance(v, Enum) else str(v))

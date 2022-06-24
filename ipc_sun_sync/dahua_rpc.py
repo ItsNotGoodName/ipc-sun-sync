@@ -22,12 +22,58 @@ Dependencies:
   pip install requests
 """
 
+from datetime import datetime, time
+from typing import Tuple, List, Union
 import hashlib
-import datetime
 
 import requests
 
+from .constants import SwitchMode
 from .exceptions import LoginError, RequestError
+
+
+def parse_time_section(time_section: str) -> Tuple[int, time, time]:
+    return (
+        int(time_section[:1]),
+        time(
+            hour=int(time_section[2:4]),
+            minute=int(time_section[5:7]),
+            second=int(time_section[8:10]),
+        ),
+        time(
+            hour=int(time_section[11:13]),
+            minute=int(time_section[14:16]),
+            second=int(time_section[17:19]),
+        ),
+    )
+
+
+def parse_switch_mode(mode: int, config: List[int]) -> SwitchMode:
+    if mode == 0 and config == [0]:
+        return SwitchMode.DAY
+    if mode == 0 and config == [1]:
+        return SwitchMode.NIGHT
+    if mode == 0 and config == [2]:
+        return SwitchMode.GENERAL
+    if mode == 1 and config == [0, 1]:
+        return SwitchMode.TIME
+    if mode == 2 and config == [0, 1]:
+        return SwitchMode.BRIGHTNESS
+
+    raise Exception("unknown switch mode: mode '%s', config '%s'" % (mode, config))
+
+
+def convert_switch_mode(switch_mode: SwitchMode) -> Tuple[int, List[int]]:
+    if switch_mode == SwitchMode.DAY:
+        return (0, [0])
+    if switch_mode == SwitchMode.NIGHT:
+        return (0, [1])
+    if switch_mode == SwitchMode.GENERAL:
+        return (0, [2])
+    if switch_mode == SwitchMode.TIME:
+        return (1, [0, 1])
+    if switch_mode == SwitchMode.BRIGHTNESS:
+        return (2, [0, 1])
 
 
 class DahuaRpc:
@@ -123,17 +169,30 @@ class DahuaRpc:
 
         return r
 
-    def sync_sunrise_and_sunset(
+    def get_sunrise_and_sunset(self, channel=0) -> Tuple[time, time, SwitchMode]:
+        row = self.get_config(params={"name": "VideoInMode"})["params"]["table"][0]
+        switchmode = parse_switch_mode(mode=row["Mode"], config=row["Config"])
+        _, sunrise, sunset = parse_time_section(row["TimeSection"][channel][0])
+        return (
+            sunrise,
+            sunset,
+            switchmode,
+        )
+
+    def set_sunrise_and_sunset(
         self,
-        sunrise: datetime.datetime,
-        sunset: datetime.datetime,
+        sunrise: Union[datetime, time],
+        sunset: Union[datetime, time],
+        switch_mode=SwitchMode.TIME,
         channel=0,
     ):
         table = self.get_config(params={"name": "VideoInMode"})["params"]["table"]
-        table[0]["Config"] = [0, 1]
-        table[0]["Mode"] = 1
-        assert table[0]["TimeSection"][channel][0].startswith("1 ")
+        # Verify that the time section begins with 1
+        assert parse_time_section(table[0]["TimeSection"][channel][0])[0] == 1
+
+        table[0]["Mode"], table[0]["Config"] = convert_switch_mode(switch_mode)
         table[0]["TimeSection"][channel][
             0
         ] = f"1 {sunrise.strftime('%H:%M:%S')}-{sunset.strftime('%H:%M:%S')}"
+
         self.set_config(params={"name": "VideoInMode", "table": table, "options": []})
