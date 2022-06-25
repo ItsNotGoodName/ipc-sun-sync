@@ -1,11 +1,15 @@
 # ipc-sun-sync
 
-[![PyPI - License](https://img.shields.io/pypi/l/ipc-sun-sync)](https://github.com/ItsNotGoodName/ipc-sun-sync/blob/master/LICENSE)
+[![PyPI - License](https://img.shields.io/pypi/l/ipc-sun-sync)](./LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/ipc-sun-sync)](https://pypi.org/project/ipc-sun-sync/)
 
 Sync sunrise and sunset on Dahua IP cameras.
 
 ## Usage
+
+See [config.yml.def](./config.yml.def) for a starter configuration.
+
+### Example
 
 Create `config.yml` with the following content.
 
@@ -78,7 +82,7 @@ ipc-sun-sync -V
 
 ## Changelog
 
-[CHANGELOG.md](https://github.com/ItsNotGoodName/ipc-sun-sync/blob/master/CHANGELOG.md)
+[CHANGELOG.md](./CHANGELOG.md)
 
 ## Troubleshooting
 
@@ -86,4 +90,4 @@ ipc-sun-sync -V
 
 ## To Do
 
-- Add verbose logging
+- Add verbose logging.
