@@ -36,7 +36,7 @@ class SwitchMode(Enum):
 
 class IPC(Protocol):
     def get_sunrise_and_sunset(self, channel=0) -> Tuple[time, time, SwitchMode]:
-        raise NotImplemented
+        raise NotImplementedError
 
     def set_sunrise_and_sunset(
         self,
@@ -45,4 +45,4 @@ class IPC(Protocol):
         switch_mode=SwitchMode.TIME,
         channel=0,
     ) -> None:
-        raise NotImplemented
+        raise NotImplementedError

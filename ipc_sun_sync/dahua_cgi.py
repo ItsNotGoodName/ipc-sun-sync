@@ -104,5 +104,5 @@ class DahuaCgi:
         }
 
         for k, v in new_night_options.items():
-            if not old_night_options[k] == v:
+            if old_night_options[k] != v:
                 self.set_night_option(k, v.value if isinstance(v, Enum) else str(v))

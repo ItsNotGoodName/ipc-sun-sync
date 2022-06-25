@@ -37,7 +37,7 @@ def main():
                 )
             except Exception as e:
                 print(traceback.format_exc())
-                logging.error("%s: %s" % (e, c["name"]))
+                logging.error("%s: %s", e, c["name"])
                 ret_code = 1
                 continue
             print(
@@ -67,23 +67,19 @@ def main():
 
     #################### Sync ####################
     print(
-        "sunrise is %s and sunset is %s for %s"
-        % (
-            sunrise.strftime("%X"),
-            sunset.strftime("%X"),
-            sunrise.strftime("%x"),
-        )
+        f"sunrise is {sunrise.strftime('%X')} and sunset is {sunset.strftime('%X')} for {sunrise.strftime('%x')}"
     )
 
     for c in config["ipc"]:
-        print("syncing %s on channel %s..." % (c["name"], c["channel"]))
+        print(f"syncing {c['name']} on channel {c['channel']}...")
 
         new_sunrise = sunrise + c["sunrise_offset"]
         new_sunset = sunset + c["sunset_offset"]
         if not valid_dahua_sunrise_and_sunset(new_sunrise, new_sunset):
             logging.error(
-                "daytime hours are not within a single day, check if your timezone, sun offsets, and coordinates are correct: sunrise is %s and sunset is %s"
-                % (new_sunrise.strftime("%X"), new_sunset.strftime("%X"))
+                "daytime hours are not within a single day, check if your timezone, sun offsets, and coordinates are correct: sunrise is %s and sunset is %s",
+                new_sunrise.strftime("%X"),
+                new_sunset.strftime("%X"),
             )
             ret_code = 1
             continue
@@ -96,11 +92,11 @@ def main():
             )
         except Exception as e:
             print(traceback.format_exc())
-            logging.error("%s: %s" % (e, c["name"]))
+            logging.error("%s: %s", e, c["name"])
             ret_code = 1
             continue
 
-        print("synced %s on channel %s" % (c["name"], c["channel"]))
+        print(f"synced {c['name']} on channel {c['channel']}")
 
     return ret_code
 
@@ -121,4 +117,4 @@ def get_ipc(ipc_config: ConfigIPC) -> IPC:
         rpc.login()
         return rpc
 
-    raise Exception("unknown method %s" % ipc_config["method"])
+    raise Exception(f"unknown method '{ipc_config['method']}'")

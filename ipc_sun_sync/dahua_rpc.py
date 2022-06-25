@@ -60,7 +60,7 @@ def parse_switch_mode(mode: int, config: List[int]) -> SwitchMode:
     if mode == 2 and config == [0, 1]:
         return SwitchMode.BRIGHTNESS
 
-    raise Exception("unknown switch mode: mode '%s', config '%s'" % (mode, config))
+    raise Exception(f"unknown switch mode: mode '{mode}', config '{config}'")
 
 
 def convert_switch_mode(switch_mode: SwitchMode) -> Tuple[int, List[int]]:
@@ -99,7 +99,7 @@ class DahuaRpc:
         if self.session_id:
             data["session"] = self.session_id
         if not url:
-            url = "http://{}/RPC2".format(self.ip)
+            url = f"http://{self.ip}/RPC2"
         r = self.s.post(url, json=data)
         return r.json()
 
@@ -112,7 +112,7 @@ class DahuaRpc:
         """
 
         # login1: get session, realm & random for real login
-        url = "http://{}/RPC2_Login".format(self.ip)
+        url = f"http://{self.ip}/RPC2_Login"
         method = "global.login"
         params = {
             "userName": self.username,
