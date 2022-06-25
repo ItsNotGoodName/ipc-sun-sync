@@ -84,6 +84,6 @@ ipc-sun-sync -V
 
 - If the program says it is successful but the sunrise and sunset times do not change, ~~try disabling `Smart Codec` if it is enabled.~~ use rpc.
 
-# To Do
+## To Do
 
 - Add verbose logging
