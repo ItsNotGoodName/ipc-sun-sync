@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Removed `CHANGELOG.md` from build include
+- `README.md` heading
+
 ## [0.2.0] - 2022-06-24
 
 ### Added
