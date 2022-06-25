@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "ipc-sun-sync"
 version = "0.0.0"
-description = "Sync sunrise and sunset on Dahua IP Cameras."
+description = "Sync sunrise and sunset on Dahua IP cameras."
 authors = ["ItsNotGoodName <gurnaindeol@gmail.com>"]
 license = "MIT"
 readme = "README.md"
