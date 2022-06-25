@@ -9,8 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Removed `CHANGELOG.md` from build include
-- `README.md` heading
+- Removed `CHANGELOG.md` from build include.
+- `README.md` heading.
+- Validate sunrise and sunset with offsets.
 
 ## [0.2.0] - 2022-06-24
 

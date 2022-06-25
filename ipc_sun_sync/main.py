@@ -74,19 +74,24 @@ def main():
             sunrise.strftime("%x"),
         )
     )
-    if not valid_dahua_sunrise_and_sunset(sunrise, sunset):
-        logging.error(
-            "daytime hours are not within a single day (e.g. sunrise 1:00 PM and sunset 12:01 AM the next day), check if your timezone and coordinates are correct"
-        )
-        return 1
 
     for c in config["ipc"]:
         print("syncing %s on channel %s..." % (c["name"], c["channel"]))
 
+        new_sunrise = sunrise + c["sunrise_offset"]
+        new_sunset = sunset + c["sunset_offset"]
+        if not valid_dahua_sunrise_and_sunset(new_sunrise, new_sunset):
+            logging.error(
+                "daytime hours are not within a single day, check if your timezone, sun offsets, and coordinates are correct: sunrise is %s and sunset is %s"
+                % (new_sunrise.strftime("%X"), new_sunset.strftime("%X"))
+            )
+            ret_code = 1
+            continue
+
         try:
             get_ipc(c).set_sunrise_and_sunset(
-                sunrise=sunrise + c["sunrise_offset"],
-                sunset=sunset + c["sunset_offset"],
+                sunrise=new_sunrise,
+                sunset=new_sunset,
                 channel=c["channel"],
             )
         except Exception as e:
