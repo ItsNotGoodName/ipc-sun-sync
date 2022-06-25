@@ -63,20 +63,20 @@ def parse_yml_or_exit(path: pathlib.Path):
         with path.open(mode="r") as stream:
             return yaml.safe_load(stream)
     except FileNotFoundError:
-        logging.error("File '%s' does not exist", path)
+        logging.error("file '%s' does not exist", path)
     except PermissionError:
-        logging.error("File '%s' is not readable", path)
+        logging.error("file '%s' is not readable", path)
     except yaml.YAMLError as error:
         logging.error(error)
     exit(1)
 
 
-def parse_method_or_exit(yml: Dict) -> ConfigMethod:
-    if "method" not in yml or yml["method"] == "cgi":
+def parse_method_or_exit(method: str) -> ConfigMethod:
+    if method == "cgi":
         return ConfigMethod.CGI
-    if yml["method"] == "rpc":
+    if method == "rpc":
         return ConfigMethod.RPC
-    logging.error("method invalid")
+    logging.error("method '%s' invalid", method)
     exit(1)
 
 
@@ -86,18 +86,26 @@ def parse_offset(offset: str) -> timedelta:
 
 def parse_config_or_exit(yml: Dict) -> Config:
     timezone = str(yml["timezone"])
-    if yml["timezone"] not in pytz.all_timezones:
-        logging.error("Timezone '%s' is invalid", yml["timezone"])
+    if timezone not in pytz.all_timezones:
+        logging.error("timezone '%s' is invalid", timezone)
         exit(1)
 
     username = str(yml["username"]) if "username" in yml else "admin"
     password = str(yml["password"])
-    method = parse_method_or_exit(yml)
+    method = (
+        parse_method_or_exit(str(yml["method"]))
+        if "method" in yml
+        else ConfigMethod.CGI
+    )
     sunrise_offset = (
-        parse_offset(yml["sunrise_offset"]) if "sunrise_offset" in yml else timedelta()
+        parse_offset(str(yml["sunrise_offset"]))
+        if "sunrise_offset" in yml
+        else timedelta()
     )
     sunset_offset = (
-        parse_offset(yml["sunset_offset"]) if "sunset_offset" in yml else timedelta()
+        parse_offset(str(yml["sunset_offset"]))
+        if "sunset_offset" in yml
+        else timedelta()
     )
 
     config: Config = {
@@ -112,17 +120,20 @@ def parse_config_or_exit(yml: Dict) -> Config:
     }
 
     for c in yml["ipc"]:
+        ip = str(c["ip"])
         ipc_config: ConfigIPC = {
-            "ip": str(c["ip"]),
-            "name": str(c["name"]) if "name" in c else str(c["ip"]),
+            "ip": ip,
+            "name": str(c["name"]) if "name" in c else ip,
             "username": str(c["username"]) if "username" in c else username,
             "password": str(c["password"]) if "password" in c else password,
             "channel": int(c["channel"]) if "channel" in c else 0,
-            "method": parse_method_or_exit(c["method"]) if "method" in c else method,
-            "sunrise_offset": parse_offset(c["sunrise_offset"])
+            "method": parse_method_or_exit(str(c["method"]))
+            if "method" in c
+            else method,
+            "sunrise_offset": parse_offset(str(c["sunrise_offset"]))
             if "sunrise_offset" in c
             else sunrise_offset,
-            "sunset_offset": parse_offset(c["sunset_offset"])
+            "sunset_offset": parse_offset(str(c["sunset_offset"]))
             if "sunset_offset" in c
             else sunset_offset,
         }

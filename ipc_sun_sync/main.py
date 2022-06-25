@@ -14,12 +14,12 @@ from .utils import get_sunrise_and_sunset, valid_dahua_sunrise_and_sunset
 def main():
     args = parse_args()
 
-    #################### Print version
+    #################### Print version ####################
     if args.version:
         print(__version__)
         return
 
-    ####################  Print timezones
+    ####################  Print timezones ####################
     if args.timezones:
         for t in pytz.all_timezones:
             print(t)
@@ -28,15 +28,16 @@ def main():
     config = parse_config_or_exit(parse_yml_or_exit(args.path))
     ret_code = 0
 
-    #################### Verify ipc settings
+    #################### Verify ipc settings ####################
     if args.verify:
         for c in config["ipc"]:
             try:
-                ipc = get_ipc(c)
-                sunrise, sunset, switch_mode = ipc.get_sunrise_and_sunset(c["channel"])
+                sunrise, sunset, switch_mode = get_ipc(c).get_sunrise_and_sunset(
+                    c["channel"]
+                )
             except Exception as e:
                 print(traceback.format_exc())
-                logging.error(e)
+                logging.error("%s: %s" % (e, c["name"]))
                 ret_code = 1
                 continue
             print(
@@ -46,7 +47,7 @@ def main():
 
     sunrise, sunset = get_sunrise_and_sunset(config["location"])
 
-    #################### Check configuration
+    #################### Check configuration ####################
     if args.check:
         print(f"timezone: {config['location'].timezone}")
         print(f"lattitude: {config['location'].latitude}")
@@ -64,7 +65,7 @@ def main():
             print(f"    sunset: {(sunset+c['sunset_offset']).strftime('%X')}")
         return
 
-    #################### Sync all ipc
+    #################### Sync ####################
     print(
         "sunrise is %s and sunset is %s for %s"
         % (
@@ -90,7 +91,7 @@ def main():
             )
         except Exception as e:
             print(traceback.format_exc())
-            logging.error(e)
+            logging.error("%s: %s" % (e, c["name"]))
             ret_code = 1
             continue
 

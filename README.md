@@ -76,8 +76,14 @@ ipc-sun-sync -T
 ipc-sun-sync -V
 ```
 
-## [Changelog](https://github.com/ItsNotGoodName/ipc-sun-sync/blob/master/CHANGELOG.md)
+## Changelog
+
+[CHANGELOG.md](https://github.com/ItsNotGoodName/ipc-sun-sync/blob/master/CHANGELOG.md)
 
 ## Troubleshooting
 
 - If the program says it is successful but the sunrise and sunset times do not change, ~~try disabling `Smart Codec` if it is enabled.~~ use rpc.
+
+# To Do
+
+- Add verbose logging
