@@ -19,16 +19,18 @@ latitude: 34.0522
 longitude: -118.2437
 timezone: America/Los_Angeles
 
+# IP camera defaults
 username: admin
 password: password
 method: cgi
-sunrise_offset: "00:30:00"
-sunset_offset: "-01:20:00"
+sunrise_offset: 00:30:00
+sunset_offset: -01:20:00
 
+# IP camera list
 ipc:
   - ip: 192.168.1.108
   - ip: 192.168.1.109
-    sunset_offset: "00:20:00"
+    sunset_offset: 00:20:00
     method: rpc
   - ip: 192.168.1.110
     name: FriendlyNameForLogging

@@ -1,17 +1,17 @@
 ---
 latitude: 0.0
 longitude: 0.0
-timezone: "GMT"
+timezone: GMT
 
-# username: "admin"
-password: "password"
-# sunrise_offset: "00:00:00"
-# sunset_offset: "00:00:00"
-# method: "cgi" # "cgi" or "rpc"
+# username: admin
+password: password
+# sunrise_offset: 00:00:00
+# sunset_offset: 00:00:00
+# method: cgi # cgi or rpc
 
 ipc:
-  - ip: "192.168.1.108"
+  - ip: 192.168.1.108
     # channel: 0
-    # sunrise_offset: "00:00:00"
-    # sunset_offset: "00:00:00"
-    # method: "cgi" # "cgi" or "rpc"
+    # sunrise_offset: 00:00:00
+    # sunset_offset: 00:00:00
+    # method: cgi # cgi or rpc
