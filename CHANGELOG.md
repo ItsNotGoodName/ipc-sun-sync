@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Parsing end time section for rpc if it is `24:00:00`
+
 ## [0.2.1] - 2022-06-24
 
 ### Fixed

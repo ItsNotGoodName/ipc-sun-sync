@@ -33,6 +33,14 @@ from .exceptions import LoginError, RequestError
 
 
 def parse_time_section(time_section: str) -> Tuple[int, time, time]:
+    # Parse end time section, it can be 24:00:00 which is invalid for python's time
+    end_hour = int(time_section[11:13])
+    if end_hour == 24:
+        end_hour, end_minute, end_second = 23, 59, 59
+    else:
+        end_minute = int(time_section[14:16])
+        end_second = int(time_section[17:19])
+
     return (
         int(time_section[:1]),
         time(
@@ -41,9 +49,9 @@ def parse_time_section(time_section: str) -> Tuple[int, time, time]:
             second=int(time_section[8:10]),
         ),
         time(
-            hour=int(time_section[11:13]),
-            minute=int(time_section[14:16]),
-            second=int(time_section[17:19]),
+            hour=end_hour,
+            minute=end_minute,
+            second=end_second,
         ),
     )
 
