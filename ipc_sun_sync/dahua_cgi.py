@@ -1,16 +1,16 @@
 from datetime import datetime, time
 from enum import Enum
-from typing import Tuple, Union, TypedDict
+from typing import Tuple, Union, Dict
 import re
 
 from requests.auth import HTTPDigestAuth
 import requests
 
-from .constants import SwitchMode
+from .constants import SwitchMode, IPC
 from .exceptions import LoginError, RequestError
 
 
-class NightOption(TypedDict):
+class NightOption(Dict):
     SwitchMode: SwitchMode
     SunriseHour: int
     SunriseMinute: int
@@ -20,7 +20,7 @@ class NightOption(TypedDict):
     SunsetSecond: int
 
 
-class DahuaCgi:
+class DahuaCgi(IPC):
     def __init__(self, ip: str, username: str, password: str):
         self.ip = ip
         self.auth = HTTPDigestAuth(username, password)

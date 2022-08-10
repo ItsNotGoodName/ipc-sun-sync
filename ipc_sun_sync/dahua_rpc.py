@@ -28,7 +28,7 @@ import hashlib
 
 import requests
 
-from .constants import SwitchMode
+from .constants import SwitchMode, IPC
 from .exceptions import LoginError, RequestError
 
 
@@ -84,7 +84,7 @@ def convert_switch_mode(switch_mode: SwitchMode) -> Tuple[int, List[int]]:
         return (2, [0, 1])
 
 
-class DahuaRpc:
+class DahuaRpc(IPC):
     def __init__(self, ip, username, password):
         self.ip = ip
         self.username = username

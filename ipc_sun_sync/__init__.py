@@ -1,6 +1,6 @@
-from importlib import metadata
+import pkg_resources
 
-__version__ = metadata.version(__package__)
-del metadata
+__version__ = pkg_resources.get_distribution("ipc-sun-sync").version
+del pkg_resources
 
 __description__ = "Sync sunrise and sunset on Dahua IP cameras."

@@ -1,6 +1,6 @@
 from datetime import time, datetime, timedelta
 from enum import Enum
-from typing import List, Protocol, Tuple, Union, TypedDict
+from typing import List, Tuple, Union, Dict
 
 import astral
 
@@ -10,7 +10,7 @@ class ConfigMethod(Enum):
     RPC = 1
 
 
-class ConfigIPC(TypedDict):
+class ConfigIPC(Dict):
     name: str
     ip: str
     username: str
@@ -21,7 +21,7 @@ class ConfigIPC(TypedDict):
     sunset_offset: timedelta
 
 
-class Config(TypedDict):
+class Config(Dict):
     location: astral.LocationInfo
     ipc: List[ConfigIPC]
 
@@ -34,7 +34,7 @@ class SwitchMode(Enum):
     GENERAL = 4
 
 
-class IPC(Protocol):
+class IPC:
     def get_sunrise_and_sunset(self, channel=0) -> Tuple[time, time, SwitchMode]:
         raise NotImplementedError
 
