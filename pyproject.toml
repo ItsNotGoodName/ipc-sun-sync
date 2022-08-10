@@ -12,7 +12,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.7,<4.0.0"
+python = ">=3.7.2,<4.0.0"
 astral = "^2.2"
 pytz = "2022.1"
 PyYAML = "^6.0"
