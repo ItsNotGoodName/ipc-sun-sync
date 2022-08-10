@@ -8,25 +8,27 @@ from .constants import IPC, ConfigIPC, ConfigMethod
 from .dahua_cgi import DahuaCgi
 from .dahua_rpc import DahuaRpc
 from .parser import parse_args, parse_yml_or_exit, parse_config_or_exit
-from .utils import get_sunrise_and_sunset, valid_dahua_sunrise_and_sunset
+from .utils import sunrise_and_sunset_from_location, valid_dahua_sunrise_and_sunset
 
 
 def main():
+    ret_code = 0
+
+    #################### Print arguments ####################
     args = parse_args()
 
     #################### Print version ####################
     if args.version:
         print(__version__)
-        return
+        return ret_code
 
     ####################  Print timezones ####################
     if args.timezones:
         for t in pytz.all_timezones:
             print(t)
-        return
+        return ret_code
 
     config = parse_config_or_exit(parse_yml_or_exit(args.path))
-    ret_code = 0
 
     #################### Verify ipc settings ####################
     if args.verify:
@@ -45,9 +47,9 @@ def main():
             )
         return ret_code
 
-    sunrise, sunset = get_sunrise_and_sunset(config["location"])
-
     #################### Check configuration ####################
+    sunrise, sunset = sunrise_and_sunset_from_location(config["location"])
+
     if args.check:
         print(f"timezone: {config['location'].timezone}")
         print(f"lattitude: {config['location'].latitude}")
@@ -63,7 +65,7 @@ def main():
             print(f"    method: {c['method']}")
             print(f"    sunrise: {(sunrise+c['sunrise_offset']).strftime('%X')}")
             print(f"    sunset: {(sunset+c['sunset_offset']).strftime('%X')}")
-        return
+        return ret_code
 
     #################### Sync ####################
     print(
