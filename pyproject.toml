@@ -29,3 +29,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 ipc-sun-sync = "ipc_sun_sync.main:main"
+
+[virtualenvs]
+create = true
+in-project = true
